@@ -1,1 +1,4 @@
-export class CreateTodoItemDto {}
+export class CreateTodoItemDto {
+  title: string;
+  description: string;
+}
