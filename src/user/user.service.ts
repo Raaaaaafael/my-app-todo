@@ -1,40 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { ReturnUserDto } from './dto/return-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-  private entityToDto(entity: UserEntity): ReturnUserDto {
-    return {
-      id: entity.id,
-      username: entity.username,
-      email: entity.email,
-      isAdmin: entity.isAdmin,
-      createdAt: entity.createdAt,
-      updatedAt: entity.updatedAt,
-      version: entity.version,
-      createdById: entity.createdById,
-      updatedById: entity.updatedById,
-    } as ReturnUserDto;
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+  ) {}
+
+  // Fix für Property 'findOneEntityByUsername' does not exist
+  async findOneEntityByUsername(username: string): Promise<UserEntity | null> {
+    return await this.userRepository.findOneBy({ username });
   }
 
-  create() {
-    return 'This action adds a new user';
-  }
+  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+    const { password, ...userData } = createUserDto;
 
-  findAll() {
-    return `This action returns all user`;
-  }
+    // Explizite Typisierung löst ESLint-Fehler
+    const salt = await (bcrypt.genSalt() as Promise<string>);
+    const hash = await (bcrypt.hash(password, salt) as Promise<string>);
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+    // WICHTIG: Erstelle das Objekt korrekt für TypeORM
+    const newUser = this.userRepository.create({
+      ...userData,
+      passwordHash: hash, // Mappe password auf passwordHash
+    });
 
-  update(id: number) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    return await this.userRepository.save(newUser);
   }
 }

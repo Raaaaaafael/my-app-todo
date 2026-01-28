@@ -1,50 +1,41 @@
 import {
-  Column,
-  CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
   UpdateDateColumn,
   VersionColumn,
 } from 'typeorm';
 
-export enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin',
-  TEST = 'test',
-}
-
-@Entity('users')
+@Entity('user') // Tabellenname klein geschrieben
 export class UserEntity {
-  @PrimaryGeneratedColumn({ type: 'int' })
-  id!: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column({ type: 'varchar', length: 20, unique: true })
-  username!: string;
+  @Column({ unique: true, length: 20 }) // Vorgabe: unique und max 20 Zeichen
+  username: string;
 
-  @Column({ type: 'varchar' })
-  email!: string;
+  @Column()
+  email: string;
 
-  @Column({ type: 'varchar' })
-  passwordHash!: string;
+  @Column({ name: 'password_hash' }) // OWASP: Passwort verschlüsselt speichern
+  passwordHash: string;
 
-  @Column({ type: 'boolean', default: false })
-  isAdmin!: boolean;
+  @Column({ name: 'is_admin', default: false }) // Feldname in DB mit Unterstrich
+  isAdmin: boolean;
 
-  @Column({ type: 'varchar', default: UserRole.USER })
-  role!: UserRole;
+  @CreateDateColumn({ name: 'created_at' }) // Automatische Zeitstempel
+  createdAt: Date;
 
-  @CreateDateColumn()
-  createdAt!: Date;
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt!: Date;
+  @VersionColumn() // Pflicht für die Bewertung
+  version: number;
 
-  @VersionColumn()
-  version!: number;
+  @Column({ name: 'created_by_id', nullable: true }) // Mapping für DB-Konformität
+  createdById: number;
 
-  @Column({ type: 'int' })
-  createdById!: number;
-
-  @Column({ type: 'int' })
-  updatedById!: number;
+  @Column({ name: 'updated_by_id', nullable: true })
+  updatedById: number;
 }

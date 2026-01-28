@@ -1,86 +1,48 @@
 import {
+  Injectable,
   CanActivate,
   ExecutionContext,
-  Injectable,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
-import { UserRequest } from 'src/types/user-request.dto';
-import { UserService } from '../user/user.service';
 
-import { PayloadDto } from './dto/payload.dto';
+interface JwtPayload {
+  sub: number;
+  username: string;
+  isAdmin: boolean;
+}
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-    private readonly usersService: UserService,
-    private readonly reflector: Reflector,
+    private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-
-    const request: UserRequest = context.switchToHttp().getRequest();
-
-    if (isPublic) {
-      Logger.verbose(
-        `${request.correlationId} ${AuthGuard.name} is requesting a public endpoint`,
-      );
-      return true;
-    }
-
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user: JwtPayload }>();
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      Logger.error(
-        `${request.correlationId} Missing token in request`,
-        AuthGuard.name,
-      );
       throw new UnauthorizedException();
     }
-    const user = await this.validateTokenAndFetchUser(
-      request.correlationId,
-      token,
-    );
-    request.user = user;
-    Logger.verbose(
-      `${request.correlationId} ${AuthGuard.name} user: ${JSON.stringify(user, null, 2)} found!`,
-    );
-    return true;
-  }
-  private async validateTokenAndFetchUser(
-    correlationId: number,
-    token: string,
-  ) {
-    const secret = this.configService.get<string>('JWT_SECRET') ?? '';
-    let payload: PayloadDto;
+
     try {
-      payload = await this.jwtService.verifyAsync<PayloadDto>(token, {
+      const secret = this.configService.get<string>('JWT_SECRET');
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
         secret,
       });
-    } catch (e) {
-      Logger.warn(
-        `${correlationId} Invalid/expired token: ${e instanceof Error ? e.message : String(e)}`,
-        AuthGuard.name,
-      );
-      throw new UnauthorizedException('Invalid or expired token');
+      request.user = payload;
+    } catch {
+      throw new UnauthorizedException();
     }
-    const user = await this.usersService.findOne(correlationId, payload.sub);
-
-    if (!user) {
-      Logger.error(`${correlationId} User not found`, AuthGuard.name);
-      throw new UnauthorizedException('User not found');
-    }
-    return user;
+    return true;
   }
+
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;

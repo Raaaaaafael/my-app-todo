@@ -1,39 +1,42 @@
 import {
   Body,
   Controller,
-  Get,
-  Logger,
   Post,
+  Get,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CorrId } from '../decorators/corr-id.decorator';
 import { SignInDto } from './dto/sign-in.dto';
-import { ApiBearerAuth } from '@nestjs/swagger';
-import { AuthGuard } from './auth.guard';
-import type { UserRequest } from '../types/user-request.dto';
-@Controller('auth')
-export class AuthController {
-  private readonly logger = new Logger(AuthController.name);
-  constructor(private authService: AuthService) {}
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { Public } from './public.decorator';
+import { AuthGuard } from './guards/jwt-auth/jwt-auth.guard';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ReturnUserDto } from 'src/user/dto/return-user.dto';
 
+@ApiTags('auth')
+@Controller('api/auth') // Globaler Prefix /api wird in main.ts gesetzt
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Public() // Öffentlich zugänglich
   @Post('login')
-  signIn(@CorrId() corrId: number, @Body() signInDto: SignInDto) {
-    this.logger.log(
-      `${corrId} ${this.signIn.name} with: ${JSON.stringify(
-        signInDto,
-        null,
-        2,
-      )}`,
-    );
-    return this.authService.signIn(corrId, signInDto);
+  @ApiOperation({ summary: 'Benutzer anmelden' })
+  async signIn(@Body() signInDto: SignInDto) {
+    return await this.authService.signIn(signInDto);
   }
 
-  @Get('profile')
-  @ApiBearerAuth()
+  @Public() // Öffentlich zugänglich
+  @Post('register')
+  @ApiOperation({ summary: 'Neuen Benutzer registrieren' })
+  async register(@Body() createUserDto: CreateUserDto) {
+    return await this.authService.register(createUserDto);
+  }
+
   @UseGuards(AuthGuard)
-  getProfile(@Request() req: UserRequest) {
+  @Get('profile')
+  @ApiOperation({ summary: 'Benutzerprofil abrufen' })
+  getProfile(@Request() req: { user: ReturnUserDto }) {
     return req.user;
   }
 }
