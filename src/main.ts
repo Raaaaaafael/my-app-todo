@@ -5,7 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { HttpMetaInterceptor } from './interceptors/http-meta-interceptor.service.interceptor';
-import { globalPrefix, swaggerInfo, version } from './config/app.config';
+import { globalPrefix, swaggerInfo, version } from './informations';
 
 /**
  * Initializes and starts the NestJS application.

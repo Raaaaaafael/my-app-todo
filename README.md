@@ -8,29 +8,29 @@ Zeitplan & Meilensteine (Projektfortschritt)
 Dieser Zeitplan dient als Leitfaden für die Umsetzung der Bewertungskriterien.
 
 Teil 1: Initialisierung & Grundstruktur (2h)
-[ ] Git Repository erstellen & .gitignore (für node_modules, dist, .env)
+[x] Git Repository erstellen & .gitignore (für node_modules, dist, .env)
 
-[ ] NestJS Projekt-Bootstrap mit GlobalPrefix und Logger.
+[x] NestJS Projekt-Bootstrap mit GlobalPrefix und Logger.
 
-[ ] CRUD-Gerüst für TODO, User und Auth mittels CLI generieren.
+[x] CRUD-Gerüst für TODO, User und Auth mittels CLI generieren.
 
-[ ] 1. Commit: Grobe Projektstruktur und CLI-Generierung.
+[x] 1. Commit: Grobe Projektstruktur und CLI-Generierung.
 
 Teil 2: Datenmodellierung & Validierung (1h)
-[ ] Todo-Entity: Implementierung aller Felder (ID, Title, Description, isClosed, Timestamps, Version).
+[x] Todo-Entity: Implementierung aller Felder (ID, Title, Description, isClosed, Timestamps, Version).
 
-[ ] DTOs: Create, Return, Update DTOs inkl. class-validator Regeln (Length, Type-Checks).
+[x] DTOs: Create, Return, Update DTOs inkl. class-validator Regeln (Length, Type-Checks).
 
-[ ] Environment: .env Konfiguration für Port, DB-Pfad und JWT-Secret via ConfigService.
+[x] Environment: .env Konfiguration für Port, DB-Pfad und JWT-Secret via ConfigService.
 
-[ ] 2. Commit: Datenmodell und Validierungslogik abgeschlossen.
+[x] 2. Commit: Datenmodell und Validierungslogik abgeschlossen.
 
 Teil 3: Security, Business Logic & Seeding (2h)
-[ ] Authentication: JWT-Strategie, Passport-Integration und Passwort-Hashing mit bcrypt.
+[x] Authentication: JWT-Strategie, Passport-Integration und Passwort-Hashing mit bcrypt.
 
 [ ] Todo-Service: CRUD-Logik inkl. Verknüpfung der createdById und updatedById.
 
-[ ] Seeding: Initialer Datenbank-Seed mit 4 Todo-Einträgen in data/todo.db.
+[x] Seeding: Initialer Datenbank-Seed mit 4 Todo-Einträgen in data/todo.db.
 
 [ ] 3. Commit: Voll funktionsfähige Logik und Absicherung der Endpunkte.
 

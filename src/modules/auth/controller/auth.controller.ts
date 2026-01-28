@@ -15,7 +15,7 @@ import { User } from '../decorators';
 import { CreateUserDto, ReturnUserDto, SignInDto, TokenInfoDto } from '../dto';
 import { AuthGuard } from '../guards/auth.guard';
 import { UserService } from '../services/user.service';
-import { CorrId } from '../decorators/corr-id.decorator';
+import { CorrId } from '../../../decorators/corr-id.decorator';
 
 @Controller('auth')
 export class AuthController {
