@@ -28,11 +28,11 @@ Teil 2: Datenmodellierung & Validierung (1h)
 Teil 3: Security, Business Logic & Seeding (2h)
 [x] Authentication: JWT-Strategie, Passport-Integration und Passwort-Hashing mit bcrypt.
 
-[ ] Todo-Service: CRUD-Logik inkl. Verknüpfung der createdById und updatedById.
+[x] Todo-Service: CRUD-Logik inkl. Verknüpfung der createdById und updatedById.
 
 [x] Seeding: Initialer Datenbank-Seed mit 4 Todo-Einträgen in data/todo.db.
 
-[ ] 3. Commit: Voll funktionsfähige Logik und Absicherung der Endpunkte.
+[x] 3. Commit: Voll funktionsfähige Logik und Absicherung der Endpunkte.
 
 Teil 4: Dokumentation, Testing & Abgabe (1h + Puffer)
 [ ] OpenAPI (Swagger): Vollständige API-Doku mit ApiProperty, example und addBearerAuth.

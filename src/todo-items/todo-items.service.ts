@@ -3,14 +3,15 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
-import { CreateTodoItemDto } from './dto/create-todo-item.dto';
-import { UpdateTodoItemDto } from './dto/update-todo-item.dto';
-import { UpdateTodoItemAdminDto } from './dto/update-todo-item-admin.dto';
-import { TodoItemEntity } from './entities/todo-item.entity';
-import { ReturnTodoItemDto } from './dto/return-todo-item.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CreateTodoItemDto } from './dto/create-todo-item.dto';
+import { UpdateTodoItemDto } from './dto/update-todo-item.dto';
+import { UpdateTodoItemAdminDto } from './dto/update-todo-item-admin.dto'; // Wichtig: Import hinzufügen
+import { TodoItemEntity } from './entities/todo-item.entity';
+import { ReturnTodoItemDto } from './dto/return-todo-item.dto';
 
 @Injectable()
 export class TodoItemsService {
@@ -21,7 +22,7 @@ export class TodoItemsService {
     private readonly repo: Repository<TodoItemEntity>,
   ) {}
 
-  // Hilfsmethode: Wandelt Entity in DTO um
+  // Hilfsmethode für die Umwandlung in das geforderte ReturnTodoDto
   private entityToDto(
     corrId: number,
     entity: TodoItemEntity,
@@ -31,7 +32,7 @@ export class TodoItemsService {
       title: entity.title,
       description: entity.description,
       isClosed: entity.isClosed,
-      createdAt: entity.createdAt.toISOString(),
+      createdAt: entity.createdAt.toISOString(), // Wandelt Date in String für DTO um
       updatedAt: entity.updatedAt.toISOString(),
       version: entity.version,
       createdById: entity.createdById,
@@ -39,30 +40,30 @@ export class TodoItemsService {
     };
   }
 
-  // NEU: Interne Methode, die das echte Entity zurückgibt
+  // Interne Methode liefert das echte Entity-Objekt für DB-Operationen
   private async findEntity(
     id: number,
     corrId: number,
   ): Promise<TodoItemEntity> {
     const entity = await this.repo.findOneBy({ id });
     if (!entity) {
-      this.logger.debug(`${corrId} findEntity id: ${id} not found`);
-      throw new NotFoundException(`Todo item ${id} not found`);
+      this.logger.debug(`${corrId} findEntity: Todo ${id} nicht gefunden`);
+      throw new NotFoundException(`Todo mit ID ${id} existiert nicht`);
     }
     return entity;
   }
 
-  // Öffentliche Methode für den Controller (liefert DTO)
-  async findOne(id: number, corrId: number): Promise<ReturnTodoItemDto> {
-    const entity = await this.findEntity(id, corrId);
-    return this.entityToDto(corrId, entity);
-  }
+  async create(dto: CreateTodoItemDto, corrId: number, userId: number) {
+    const existing = await this.repo.findOneBy({ title: dto.title });
+    if (existing)
+      throw new ConflictException(
+        'Ein Todo mit diesem Titel existiert bereits',
+      );
 
-  async create(dto: CreateTodoItemDto, corrId: number, todoId: number) {
     const entity = this.repo.create({
       ...dto,
-      createdById: todoId,
-      updatedById: todoId,
+      createdById: userId,
+      updatedById: userId,
     });
     const saved = await this.repo.save(entity);
     return this.entityToDto(corrId, saved);
@@ -73,66 +74,76 @@ export class TodoItemsService {
     return items.map((item) => this.entityToDto(corrId, item));
   }
 
-  // 1.2.5 Replace
+  async findOne(id: number, corrId: number) {
+    const entity = await this.findEntity(id, corrId);
+    return this.entityToDto(corrId, entity);
+  }
+
+  // 1.2.5 [PUT] Replace Todo
   async replace(
     id: number,
     dto: CreateTodoItemDto,
     corrId: number,
-    todoId: number,
+    userId: number,
   ) {
-    const existing = await this.findEntity(id, corrId); // Nutze findEntity!
-    if (existing.createdById !== todoId) throw new ForbiddenException();
+    const existing = await this.findEntity(id, corrId);
+    if (existing.createdById !== userId)
+      throw new ForbiddenException('Kein Zugriff auf dieses Todo');
 
-    // Hier mischen wir die Daten in ein neues Objekt für .save()
     const updated = await this.repo.save({
       ...existing,
       ...dto,
       id: id,
-      updatedById: todoId,
+      updatedById: userId,
     });
     return this.entityToDto(corrId, updated);
   }
 
-  // 1.2.6 Update
+  // 1.2.6 [PATCH] Update Todo
   async update(
     id: number,
     dto: UpdateTodoItemDto,
     corrId: number,
-    todoId: number,
+    userId: number,
   ) {
-    const existing = await this.findEntity(id, corrId); // Nutze findEntity!
-    if (existing.createdById !== todoId) throw new ForbiddenException();
+    const existing = await this.findEntity(id, corrId);
+    if (existing.createdById !== userId) throw new ForbiddenException();
 
-    await this.repo.update(id, { ...dto, updatedById: todoId });
+    await this.repo.update(id, { ...dto, updatedById: userId });
     const updated = await this.findEntity(id, corrId);
     return this.entityToDto(corrId, updated);
   }
 
-  // 1.2.7 Delete
-  async remove(id: number, corrId: number, todoId: number, isAdmin: boolean) {
-    const existing = await this.findEntity(id, corrId); // Nutze findEntity!
-
-    if (!isAdmin && existing.createdById !== todoId) {
-      throw new ForbiddenException();
-    }
-
-    const deleted = await this.repo.remove(existing); // Jetzt ist es ein Entity!
-    return this.entityToDto(corrId, deleted);
-  }
-
+  // --- NEU: Diese Methode hat dir gefehlt ---
+  // [PATCH] Update Todo as Admin
   async updateByAdmin(
     id: number,
-    todoId: number,
     corrId: number,
+    adminId: number,
     adminDto: UpdateTodoItemAdminDto,
-  ) {
-    const existing = await this.findEntity(id, corrId);
-    const updated = await this.repo.save({
-      ...existing,
+  ): Promise<ReturnTodoItemDto> {
+    const existingEntity = await this.findEntity(id, corrId);
+
+    const updatedEntity = await this.repo.save({
+      ...existingEntity,
       ...adminDto,
-      updatedById: todoId,
-      id,
+      updatedById: adminId, // Protokolliert, welcher Admin die Änderung vornahm
+      id: id,
     });
-    return this.entityToDto(corrId, updated);
+
+    this.logger.log(`${corrId} Admin-Update für Todo ${id} durchgeführt.`);
+    return this.entityToDto(corrId, updatedEntity);
+  }
+
+  // 1.2.7 [DELETE] Delete Todo
+  async remove(id: number, corrId: number, userId: number, isAdmin: boolean) {
+    const existing = await this.findEntity(id, corrId);
+
+    if (!isAdmin && existing.createdById !== userId) {
+      throw new ForbiddenException('Löschen nicht erlaubt');
+    }
+
+    const deleted = await this.repo.remove(existing);
+    return this.entityToDto(corrId, deleted);
   }
 }

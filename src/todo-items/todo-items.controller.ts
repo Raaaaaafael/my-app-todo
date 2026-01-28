@@ -10,13 +10,14 @@ import {
   ParseIntPipe,
   ForbiddenException,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { TodoItemsService } from './todo-items.service';
 import { CreateTodoItemDto } from './dto/create-todo-item.dto';
 import { UpdateTodoItemDto } from './dto/update-todo-item.dto';
 import { UpdateTodoItemAdminDto } from './dto/update-todo-item-admin.dto';
 import { CorrId } from 'src/decorators/corr-id.decorator';
 import { IsClosed, TodoId } from './decorators/decorators';
+import { ReturnTodoItemDto } from './dto/return-todo-item.dto';
 
 @ApiTags('todo')
 @ApiBearerAuth()
@@ -88,12 +89,20 @@ export class TodoItemsController {
 
   // Admin Update (Zusatzroute aus deinem Code)
   @Patch(':id/admin')
-  updateByAdmin(
+  @ApiOperation({ summary: 'Update todo as admin' })
+  async updateByAdmin(
     @Param('id', ParseIntPipe) id: number,
     @Body() adminDto: UpdateTodoItemAdminDto,
     @CorrId() corrId: number,
-    @TodoId() adminId: number,
-  ) {
-    return this.todoItemsService.updateByAdmin(id, adminId, corrId, adminDto);
+    @TodoId() todoId: number,
+  ): Promise<ReturnTodoItemDto> {
+    // Der Controller ruft NUR den Service auf.
+    // Er hat selbst kein 'repo', 'findEntity' oder 'entityToDto'.
+    return await this.todoItemsService.updateByAdmin(
+      id,
+      corrId,
+      todoId,
+      adminDto,
+    );
   }
 }
