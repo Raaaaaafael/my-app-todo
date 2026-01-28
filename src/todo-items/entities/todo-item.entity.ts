@@ -1,3 +1,4 @@
+import { UserEntity } from 'src/modules/auth/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   VersionColumn,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity('todo') // Tabellenname klein geschrieben
@@ -35,4 +37,7 @@ export class TodoItemEntity {
 
   @VersionColumn() // Pflicht laut Liste
   version: number;
+
+  @ManyToOne(() => UserEntity, (user) => user.id, { eager: false })
+  owner: UserEntity; // <-- Wenn hier 'owner' steht, ist das dein Key!
 }

@@ -35,15 +35,15 @@ Teil 3: Security, Business Logic & Seeding (2h)
 [x] 3. Commit: Voll funktionsfähige Logik und Absicherung der Endpunkte.
 
 Teil 4: Dokumentation, Testing & Abgabe (1h + Puffer)
-[ ] OpenAPI (Swagger): Vollständige API-Doku mit ApiProperty, example und addBearerAuth.
+[x] OpenAPI (Swagger): Vollständige API-Doku mit ApiProperty, example und addBearerAuth.
 
-[ ] Unit-Tests: 100% Code-Coverage für todo.service.spec (Mocking der Repositories).
+[X] Unit-Tests: 100% Code-Coverage für todo.service.spec (Mocking der Repositories).
 
-[ ] E2E / Postman: Finale Prüfung aller Endpunkte (Zertifizierung der 96 Postman-Punkte).
+[X] E2E / Postman: Finale Prüfung aller Endpunkte (Zertifizierung der 96 Postman-Punkte).
 
-[ ] Fazit: Reflexion und Abschlussdokumentation.
+[X] Fazit: Reflexion und Abschlussdokumentation.
 
-[ ] Finaler Commit: Abgabebereiter Stand.
+[X] Finaler Commit: Abgabebereiter Stand.
 
 Technische Details
 Installation
@@ -66,8 +66,12 @@ $ npm run test
 
 # Test Coverage
 $ npm run test:cov
-Fazit
 
+
+
+Fazit
+In diesen 5 Tagen habe ich einiges gelernt. Die Grundstruktur für eine API in NestJs. Wie der Controller, Service, etc. aussehen muss. Meiner meinung nach war dies einer der Besten ÜKs, welche ich je hatte. Weil ich fühle mich als ob ich selbständig, natürlich hier und da mit Hilfe, eine eigene REST-API in Nestjs erstellen könnte. Bei den Projekten habe ich alles eigentlich gut verstanden. Die Security fällt mir ab und zu mit dem Token noch ein wenig schwer, aber ich denke, dass ich dies auch bald im Geschäftsbereich vertieft anschaue und es hat mir schon einmal einen guten Einblick gegeben. Auch wenn es nicht meine eigentlich Hauptsprache (Java) ist, denke ich, es bringt mir auch viel für das Geschäft, weil es allgemeines aufgezeigt hat. Sicherlich wird es mir auch neben meinem momentanen Geschäftsgeber etwas bringen. Ich glaube, dass wir Nestjs sogar in ein paar fällen verwenden.
+Alles in allem würde ich sagen es hat einen sehr guten und ausführlichen Einblick in die REST-API Backend entwicklung gegeben.
 
 License
 Nest is MIT licensed.
