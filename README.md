@@ -70,8 +70,13 @@ $ npm run test:cov
 
 
 Fazit
-In diesen 5 Tagen habe ich einiges gelernt. Die Grundstruktur für eine API in NestJs. Wie der Controller, Service, etc. aussehen muss. Meiner meinung nach war dies einer der Besten ÜKs, welche ich je hatte. Weil ich fühle mich als ob ich selbständig, natürlich hier und da mit Hilfe, eine eigene REST-API in Nestjs erstellen könnte. Bei den Projekten habe ich alles eigentlich gut verstanden. Die Security fällt mir ab und zu mit dem Token noch ein wenig schwer, aber ich denke, dass ich dies auch bald im Geschäftsbereich vertieft anschaue und es hat mir schon einmal einen guten Einblick gegeben. Auch wenn es nicht meine eigentlich Hauptsprache (Java) ist, denke ich, es bringt mir auch viel für das Geschäft, weil es allgemeines aufgezeigt hat. Sicherlich wird es mir auch neben meinem momentanen Geschäftsgeber etwas bringen. Ich glaube, dass wir Nestjs sogar in ein paar fällen verwenden.
-Alles in allem würde ich sagen es hat einen sehr guten und ausführlichen Einblick in die REST-API Backend entwicklung gegeben.
+Zuerst war ich sehr gut im Zeitplan, dann habe ich das mit den Modulen nicht gemacht. Dadurch habe ich zuerst viel Zeit verloren, aber ich konnte die Zeit wieder gut Aufholen. Am Schluss bin ich so einigermassen zufrieden, ich habe zwar nicht alle Tests richtig und auch nicht 100\% Coverage. Aber ich habe die anderen Sachen gut durchführen können. Alles ist eigentlich sehr gut verlaufen, bis auf die Tests. Was sicher mein grösster Fehler war, war es nicht richtig mit den Modulen zu arbeiten, aber ich konnte dennoch es meiner Meinung nach gut abgeben. 
+
+Projekt Details:
+Ich habe für das 1. Ziel ein wenig länger gebraucht. Eher gegen die 2h
+Für das 2. Ziel habe ich deutlich kürzer gebraucht eher 0.5h
+Für das 3. Ziel habe ich genau nach vorgabe dran gehabt also etwa 2h
+Für das 4. Ziel habe ich noch länger gebraucht also 2.5h
 
 License
 Nest is MIT licensed.
